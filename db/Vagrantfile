@@ -1,0 +1,30 @@
+$bootstrap = <<-'SCRIPT'
+apt-get update -qq
+apt-get install -y -qq ca-certificates curl apt-transport-https lsb-release gnupg bash-completion tmux jq
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg |
+    gpg --dearmor -o /etc/apt/trusted.gpg.d/docker.gpg
+
+echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" |
+    tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+apt-get update -qq
+apt-get install -y -qq docker-ce docker-ce-cli containerd.io
+
+usermod -aG docker ${VAGRANT_USER}
+
+cd /vagrant && bash start-clean.sh
+SCRIPT
+
+Vagrant.configure('2') do |config|
+  config.vm.box = 'bento/ubuntu-20.04'
+  config.vm.hostname = 'db'
+  config.vm.provider 'virtualbox' do |vb|
+    vb.name = 'db'
+    vb.memory = 2048
+    vb.cpus = 2
+    vb.customize ['modifyvm', :id, '--audio', 'none']
+  end
+  config.vm.provision 'shell', env: {'VAGRANT_USER' => 'vagrant', 'DEBIAN_FRONTEND' => 'noninteractive'}, inline: $bootstrap
+  config.vm.network 'private_network', ip: '192.168.150.101'
+end
