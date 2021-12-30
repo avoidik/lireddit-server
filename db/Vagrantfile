@@ -27,4 +27,7 @@ Vagrant.configure('2') do |config|
   end
   config.vm.provision 'shell', env: {'VAGRANT_USER' => 'vagrant', 'DEBIAN_FRONTEND' => 'noninteractive'}, inline: $bootstrap
   config.vm.network 'private_network', ip: '192.168.150.101'
+  config.trigger.before [:destroy, :halt] do |trigger|
+    trigger.run_remote = {inline: "/bin/bash /vagrant/stop.sh"}
+  end
 end

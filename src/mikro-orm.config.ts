@@ -1,4 +1,5 @@
 import { Post } from "./entities/Post";
+import { User } from "./entities/User";
 import { __prod__ } from "./constants";
 import { Options } from "@mikro-orm/core";
 import path from "path";
@@ -8,7 +9,7 @@ const config: Options = {
         path: path.join(__dirname, './migrations'),
         pattern: /^[\w-]+\d+\.[tj]s$/,
     },
-    entities: [Post],
+    entities: [Post, User],
     //dbName: 'database',
     //user: 'admin',
     //password: 'password',
